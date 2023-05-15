@@ -10,7 +10,9 @@ import utils
 
 class CameraThread:
     def __init__(self, src=0):
-        self.cap = cv2.VideoCapture(src)
+        self.cap = cv2.VideoCapture(src, cv2.CAP_DSHOW)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
         self.name_id = 1
         utils.make_dir(mode='video', name_id=self.name_id)
