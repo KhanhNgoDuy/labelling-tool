@@ -5,6 +5,5 @@ test_annot.txt
 
 # folders
 __pycache__/
-Clipped/
 .idea/
 data/

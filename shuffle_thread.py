@@ -30,7 +30,7 @@ def shuffle_clips():
                 ret, frame = cap.read()
                 if ret:
                     cv2.imshow('Clip', frame)
-                    if cv2.waitKey(10) & 0xFF == ord('q'):
+                    if cv2.waitKey(1) & 0xFF == ord('q'):
                         cap.release()
                         cv2.destroyWindow('Clip')
                         break
@@ -39,8 +39,8 @@ def shuffle_clips():
                     cv2.destroyWindow('Clip')
                     break
         elif isinstance(video, numbers.Complex):
-            # print(video)
-            time.sleep(video)
+            # time.sleep(video)
+            pass
 
 
 class ShuffleThread:
@@ -55,7 +55,7 @@ class ShuffleThread:
                     or __name__ == '__main__':
                 # print(utils.toggle_var)
                 shuffle_clips()
-                print('**** Finished ****')
+                print('******* Finished *******')
                 keyboard.wait('space')
             # elif utils.toggle_var != 'start':
             #     print(utils.toggle_var)

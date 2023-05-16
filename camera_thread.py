@@ -9,12 +9,12 @@ import utils
 
 
 class CameraThread:
+
     def __init__(self, src=0):
         self.cap = cv2.VideoCapture(src)
 
-        self.name_id = 1
-        utils.make_dir(mode='video', name_id=self.name_id)
-        self.path = os.path.join('data', str(self.name_id), 'video', str(self.name_id) + '.mp4')
+        utils.make_dir(name_id=utils.name_id)
+        self.path = os.path.join('data', str(utils.name_id), str(utils.name_id) + '.mp4')
 
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         self.writer = cv2.VideoWriter(self.path, self.fourcc, 25.0,
@@ -30,19 +30,15 @@ class CameraThread:
         while True:
             _, frame = self.cap.read()
 
-            window_name = 'Image'
             font = cv2.FONT_HERSHEY_SIMPLEX
             org = (50, 50)
             fontScale = 1
             color = (255, 0, 0)
             thickness = 2
-            frame = cv2.putText(frame, str(utils.frame), org, font,
+            annot_frame = cv2.putText(frame, str(utils.frame), org, font,
                                 fontScale, color, thickness, cv2.LINE_AA)
 
-
-
-
-            cv2.imshow('frame', frame)
+            cv2.imshow('frame', annot_frame)
 
             if utils.toggle_var == 'start':
                 utils.frame += 1
@@ -63,12 +59,10 @@ class CameraThread:
     def toggle(self):
         self.is_running = not self.is_running
         if self.is_running:
-            utils.make_dir(mode='video', name_id=self.name_id)
-            self.path = os.path.join('data', str(self.name_id), 'video', str(self.name_id) + '.mp4')
+            utils.make_dir(name_id=utils.name_id)
+            self.path = os.path.join('data', str(utils.name_id), str(utils.name_id) + '.mp4')
             self.writer = cv2.VideoWriter(self.path, self.fourcc, 25.0,
                                           (int(self.cap.get(3)), int(self.cap.get(4))))
-        elif not self.is_running:
-            self.name_id += 1
 
 
 if __name__ == '__main__':

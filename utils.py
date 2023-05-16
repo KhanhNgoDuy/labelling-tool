@@ -2,18 +2,21 @@ import os
 import time
 from queue import Queue
 import keyboard
+from datetime import datetime
+
 
 MAXSIZE = 5
+toggle_var = None
+frame = 0
+name_id = 1
 start_time = time.perf_counter()
 
 order_q = Queue(maxsize=MAXSIZE)
 start_q = Queue(maxsize=MAXSIZE)
 stop_q = Queue(maxsize=MAXSIZE)
-toggle_q = Queue(maxsize=1)
-
-toggle_var = None
-
-frame = 0
+start_time_q = Queue(maxsize=MAXSIZE)
+stop_time_q = Queue(maxsize=MAXSIZE)
+queues = [order_q, start_q, stop_q, start_time_q, stop_time_q]
 
 
 class ButtonManager:
@@ -23,36 +26,26 @@ class ButtonManager:
         self.bind_key()
 
     def on_press_a(self):
-        press_time = time.perf_counter() - start_time
-        press_time = round(press_time, 2)
-        start_q.put(frame)
-        print(frame)
-        # start_q.put(press_time)
-        # print(press_time)
+        if not start_q.full():
+            start_q.put(frame)
+            start_time_q.put(datetime.now())
 
     def on_press_b(self):
-        press_time = time.perf_counter() - start_time
-        press_time = round(press_time, 2)
-        # stop_q.put(press_time)
-        # print(press_time)
-        stop_q.put(frame)
-        print(frame)
+        if not stop_q.full():
+            stop_q.put(frame)
+            stop_time_q.put(datetime.now())
 
     def on_press_space(self):
-        global toggle_var, toggle_q, start_time
+        global toggle_var, start_time, name_id
         self.pre_space = not self.pre_space
 
         if self.pre_space:
             toggle_var = 'start'
-            toggle_q.put('start')
-
-            # Restart timer
             start_time = time.perf_counter()
 
         elif not self.pre_space:
-            print(frame)
             toggle_var = 'stop'
-            toggle_q.put('stop')
+            # print('utils - frame ', frame)
 
         print('-'*20)
 
@@ -62,8 +55,8 @@ class ButtonManager:
         keyboard.add_hotkey('space', self.on_press_space)
 
 
-def make_dir(mode, name_id):
-    _dir = os.path.join('data', str(name_id), mode)
+def make_dir(name_id):
+    _dir = os.path.join('data', str(name_id))
     if not os.path.exists(_dir):
         os.makedirs(_dir)
 
