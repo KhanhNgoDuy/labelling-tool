@@ -1,6 +1,6 @@
 import queue
-
 import numpy as np
+import random
 
 import utils
 
@@ -19,10 +19,9 @@ class VideoRandomizer:
 
             try:
                 for cls in self.cls:
-                    print(cls)
                     utils.order_q.put_nowait(cls)
             except queue.Full:
-                print(len(utils.order_q.queue))
+                pass
 
             # self.mini_insertion()
             self.random_insertion()
@@ -32,10 +31,12 @@ class VideoRandomizer:
 
     def random_insertion(self):
         num_insertion = np.random.randint(MIN_INSERTION, MAX_INSERTION)
-        sleep_arr = np.random.randint(low=MIN_DURATION, high=MAX_DURATION, size=utils.MAXSIZE)
+        idx = random.sample(range(0, utils.MAXSIZE), num_insertion)
+        idx = sorted(idx, reverse=True)
+        sleep_arr = np.random.randint(low=MIN_DURATION, high=MAX_DURATION, size=num_insertion)
 
-        for i in range(utils.MAXSIZE):
-            self.cls.insert(utils.MAXSIZE - i - 1, sleep_arr[i])
+        for i in range(num_insertion):
+            self.cls.insert(idx[i], sleep_arr[i])
 
     def mini_insertion(self):
         for i in range(len(self.cls)):

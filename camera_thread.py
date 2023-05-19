@@ -11,9 +11,8 @@ import utils
 class CameraThread:
 
     def __init__(self, src=0):
-        self.cap = cv2.VideoCapture(src, cv2.CAP_DSHOW)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        self.cap = cv2.VideoCapture(src)
+        print('============================ READY ============================')
 
         utils.make_dir(name_id=utils.name_id)
         self.path = os.path.join('data', str(utils.name_id), str(utils.name_id) + '.mp4')
@@ -32,15 +31,16 @@ class CameraThread:
         while True:
             _, frame = self.cap.read()
 
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            org = (50, 50)
-            fontScale = 1
-            color = (255, 0, 0)
-            thickness = 2
-            annot_frame = cv2.putText(frame, str(utils.frame), org, font,
-                                fontScale, color, thickness, cv2.LINE_AA)
+            # font = cv2.FONT_HERSHEY_SIMPLEX
+            # org = (50, 50)
+            # fontScale = 1
+            # color = (255, 0, 0)
+            # thickness = 2
+            #
+            # annot_frame = cv2.putText(frame, str(utils.frame), org, font,
+            #                     fontScale, color, thickness, cv2.LINE_AA)
 
-            cv2.imshow('frame', annot_frame)
+            cv2.imshow('frame', frame)
 
             if utils.toggle_var == 'start':
                 utils.frame += 1
@@ -50,14 +50,13 @@ class CameraThread:
                 utils.frame = 0
                 self.writer.release()
 
-            if cv2.waitKey(10) & 0xFF == ord('q'):
+            if cv2.waitKey(1) & 0xFF == ord('q'):
                 print('stop camera')
                 self.cap.release()
                 self.writer.release()
                 cv2.destroyWindow('frame')
                 break
 
-    # Update the name ID when 'space' is pressed
     def toggle(self):
         self.is_running = not self.is_running
         if self.is_running:

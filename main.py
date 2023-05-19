@@ -18,8 +18,8 @@ def create_annot(path):
 if __name__ == '__main__':
     # Đổi "src" thành ID của camera (tương tự cv2.VideoCapture(src))
     # src = "rtsp://admin:comvis123@192.168.100.125:554/Streaming/Channels/101/"
-    src = "test_vid.mp4"
-    # src = 0
+    # src = "test_vid.mp4"
+    src = 0
 
     # Run threads
     utils.ButtonManager()

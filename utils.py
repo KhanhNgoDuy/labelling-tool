@@ -3,12 +3,16 @@ import time
 from queue import Queue
 import keyboard
 from datetime import datetime
+import json
 
 
-MAXSIZE = 5
+with open('config.json', 'r') as f:
+    json_data = json.load(f)
+    name_id = json_data['name_id']
+    MAXSIZE = json_data['MAXSIZE']
+
 toggle_var = None
 frame = 0
-name_id = 1
 start_time = time.perf_counter()
 
 order_q = Queue(maxsize=MAXSIZE)
