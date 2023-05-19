@@ -3,7 +3,7 @@ Stop
 Slower
 Faster
 Done
-Follow_Me
+FollowMe
 Lift
 Home
 Interaction
