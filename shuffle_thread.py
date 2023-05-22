@@ -29,6 +29,7 @@ def shuffle_clips():
             while cap.isOpened():
                 ret, frame = cap.read()
                 if ret:
+                    cv2.flip(frame, 1)
                     cv2.imshow('Clip', frame)
                     if cv2.waitKey(10) & 0xFF == ord('q'):
                         cap.release()
@@ -36,11 +37,11 @@ def shuffle_clips():
                         break
                 else:
                     cap.release()
-                    cv2.destroyWindow('Clip')
+                    # cv2.destroyWindow('Clip')
                     break
         elif isinstance(video, numbers.Complex):
             time.sleep(video)
-            # pass
+    cv2.destroyWindow('Clip')
 
 
 class ShuffleThread:

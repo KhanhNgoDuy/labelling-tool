@@ -8,9 +8,10 @@ import json
 
 with open('config.json', 'r') as f:
     json_data = json.load(f)
-    name_id = json_data['name_id']
+    # name_id = json_data['name_id']
     MAXSIZE = json_data['MAXSIZE']
 
+name_id = 1
 toggle_var = None
 frame = 0
 start_time = time.perf_counter()
