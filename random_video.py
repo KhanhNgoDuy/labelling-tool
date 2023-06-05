@@ -1,7 +1,6 @@
 import queue
-import numpy as np
 import random
-
+import numpy as np
 import utils
 
 
@@ -17,11 +16,8 @@ class VideoRandomizer:
             self.cls = f.read().split()[:utils.MAXSIZE]
             self.random_indexing()
 
-            try:
-                for cls in self.cls:
-                    utils.order_q.put_nowait(cls)
-            except queue.Full:
-                pass
+            for cls in self.cls:
+                utils.order_q.put_nowait(cls)
 
             # self.mini_insertion()
             self.random_insertion()

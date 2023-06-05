@@ -4,7 +4,7 @@ test_annot.txt
 *.mp4
 
 # folders
-Clipped/
 __pycache__/
+Clipped/
 .idea/
 data/

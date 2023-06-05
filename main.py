@@ -1,60 +1,58 @@
 import os.path
 import time
-import keyboard
+import queue
 import pandas
 
+import keyboard
+
 from shuffle_thread import ShuffleThread
-from camera_thread import CameraThread
+from camera_thread import CameraThread, SpinCamThread
 import utils
 
 
 def create_annot(path):
-    annot = {
+    annotation = {
+        # 'ID': utils.ID,
         'label': utils.order_q.queue,
         'start': utils.start_q.queue,
-        'end': utils.stop_q.queue
+        'stop': utils.stop_q.queue
     }
 
-    pandas.DataFrame(annot).to_csv(path)
-
-    # with open(path, 'w') as f:
-    #     for cls, start, stop, start_t, stop_t in zip(utils.order_q.queue, utils.start_q.queue, utils.stop_q.queue,
-    #                                                  utils.start_time_q.queue, utils.stop_time_q.queue):
-    #         print(f'{cls},{start},{stop},{start_t},{stop_t}')
-    #         f.writelines(f'{cls},{start}\t{stop}\t{start_t}\t{stop_t}\n')
+    df = pandas.DataFrame(annotation)
+    print(df)
+    df.to_csv(path)
 
 
 if __name__ == '__main__':
+
     # Đổi "src" thành ID của camera (tương tự cv2.VideoCapture(src))
-    src = "rtsp://admin:comvis123@192.168.100.125:554/Streaming/Channels/102/"
-    # src = "test_vid.mp4"
-    # src = 1
+    # src = "rtsp://admin:comvis123@192.168.100.125/Streaming/Channels/102"
+    src = 0
+
+    name = input('Enter subject name: ')
 
     # Run threads
     utils.ButtonManager()
     ShuffleThread()
-    CameraThread(src)
-
-    name = str(input())
+    # CameraThread(name=name, src=src)
+    SpinCamThread(name=name)
 
     while True:
-        time.sleep(.01)
+        time.sleep(.001)
 
-        if len(utils.start_q.queue) == utils.MAXSIZE and \
-                len(utils.stop_q.queue) == utils.MAXSIZE and \
-                len(utils.order_q.queue) == utils.MAXSIZE and \
-                utils.toggle_var == 'stop':
+        if (len(utils.start_q.queue) == utils.MAXSIZE and
+                len(utils.stop_q.queue) == utils.MAXSIZE and
+                len(utils.order_q.queue) == utils.MAXSIZE):
 
-            print('----- Name ID:', utils.name_id)
-            name_id = name + utils.name_id
-            utils.make_dir(name_id=name)
-            path = os.path.join('data', str(name), str(name_id) + '.csv')
+            print('--- Name ID:', utils.name_id)
+            utils.make_dir(name=name)
+            path = os.path.join('data', name, f'{name}_{str(utils.name_id)}' + '.csv')
             create_annot(path)
 
             for q in utils.queues:
                 q.queue.clear()
 
-            time.sleep(0.5)
+            time.sleep(1)
             utils.name_id += 1
 
         if keyboard.is_pressed('q'):

@@ -20,7 +20,6 @@ def shuffle_clips():
     print(playlist)
 
     for video in playlist:
-        # print(video)
         if isinstance(video, str):
             time.sleep(DEFAULT_DELAY)
             path = os.path.join(VIDEO_PATH, video+'.mp4')
@@ -29,7 +28,6 @@ def shuffle_clips():
             while cap.isOpened():
                 ret, frame = cap.read()
                 if ret:
-                    cv2.flip(frame, 1)
                     cv2.imshow('Clip', frame)
                     if cv2.waitKey(10) & 0xFF == ord('q'):
                         cap.release()
@@ -37,11 +35,13 @@ def shuffle_clips():
                         break
                 else:
                     cap.release()
-                    # cv2.destroyWindow('Clip')
                     break
         elif isinstance(video, numbers.Complex):
+            try:
+                cv2.destroyWindow('Clip')
+            except cv2.error:
+                pass
             time.sleep(video)
-    cv2.destroyWindow('Clip')
 
 
 class ShuffleThread:
@@ -52,21 +52,10 @@ class ShuffleThread:
     @staticmethod
     def shuffle():
         while True:
+            keyboard.wait('space')
             if utils.toggle_var == 'start' \
                     or __name__ == '__main__':
-                # print(utils.toggle_var)
                 shuffle_clips()
-                print('******* Finished *******')
-                keyboard.wait('space')
-            # elif utils.toggle_var != 'start':
-            #     print(utils.toggle_var)
+                print('**** Finished ****')
 
 
-if __name__ == '__main__':
-    ShuffleThread()
-    while True:
-        # running_threads = [t.name for t in threading.enumerate() if t.is_alive()]
-        # print(f"Running threads: {running_threads}")
-        time.sleep(1)
-        if keyboard.is_pressed('q'):
-            break
