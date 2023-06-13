@@ -11,16 +11,23 @@ MAX_DURATION = 5
 
 
 class VideoRandomizer:
-    def __init__(self):
-        with open('classes.txt', 'r') as f:
-            self.cls = f.read().split()[:utils.MAXSIZE]
-            self.random_indexing()
+    def __init__(self, order_q):
+        self.cls = self.get_video_list()
+        self.random_indexing()
 
-            for cls in self.cls:
-                utils.order_q.put_nowait(cls)
+        for cls in self.cls:
+            order_q.put_nowait(cls)
+        # self.mini_insertion()
+        self.random_insertion()
 
-            # self.mini_insertion()
-            self.random_insertion()
+    @staticmethod
+    def get_video_list():
+        cls = []
+        with open(utils.CLS_PATH, 'r') as f:
+            for line in f:
+                cls.append(line.split()[1])
+        cls = cls[:utils.MAXSIZE]
+        return cls
 
     def random_indexing(self):
         np.random.shuffle(self.cls)

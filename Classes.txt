@@ -1,19 +1,19 @@
-Start
-Stop
-Slower
-Faster
-Done
-FollowMe
-Lift
-Home
-Interaction
-Look
-PickPart
-DepositPart
-Report
-Ok
-Again
-Help
-Joystick
-Identification
-Change
+0   Start
+1   Stop
+2   Slower
+3   Faster
+4   Done
+5   FollowMe
+6   Lift
+7   Home
+8   Interaction
+9   Look
+10  PickPart
+11  DepositPart
+12  Report
+13  Ok
+14  Again
+15  Help
+16  Joystick
+17  Identification
+18  Change

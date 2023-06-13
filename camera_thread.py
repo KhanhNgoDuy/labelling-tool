@@ -1,22 +1,26 @@
 import os.path
+from pathlib import Path
+
 import cv2
 import keyboard
-from threading import Thread
 import utils
 import time
+from threading import Thread
+from multiprocessing import Queue
 
 import PySpin
 
 
 class CameraThread:
-    def __init__(self, name, src=0):
+    def __init__(self, name, toggle_var, src=0):
 
         self.cap = cv2.VideoCapture(src)
         print('================== READY ==================')
         self.name_id = name
+        self.toggle_var = toggle_var
 
-        utils.make_dir(name=self.name_id)
-        self.path = os.path.join('data', self.name_id, f'{self.name_id}_{str(utils.name_id)}' + '.mp4')
+        Path('data/' + self.name_id).mkdir(parents=True, exist_ok=True)
+        self.path = os.path.join('data', self.name_id, f'{self.name_id}_{str(utils.name_id.value)}' + '.mp4')
 
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         self.writer = cv2.VideoWriter(self.path, self.fourcc, 25.0,
@@ -43,7 +47,7 @@ class CameraThread:
             color = (255, 0, 0)
             thickness = 2
 
-            annotated_frame = cv2.putText(annotated_frame, str(utils.frame), (250, 70), font,
+            annotated_frame = cv2.putText(annotated_frame, str(utils.frame.value), (250, 70), font,
                                           fontScale, color, thickness, cv2.LINE_AA)
 
             height, width, _ = frame[40:, :].shape
@@ -56,15 +60,18 @@ class CameraThread:
 
             cv2.imshow('frame', annotated_frame)
 
-            if utils.toggle_var == 'start':
-                utils.frame += 1
-                self.writer.write(frame[40:, :])
+            try:
+                if self.toggle_var.value == 'start':
+                    utils.frame.value += 1
+                    self.writer.write(frame[40:, :])
 
-            elif utils.toggle_var == 'stop':
-                utils.frame = 0
-                self.writer.release()
+                elif self.toggle_var.value == 'stop':
+                    utils.frame.value = 0
+                    self.writer.release()
+            except Exception as e:
+                pass
 
-            if cv2.waitKey(10) & 0xFF == ord('q'):
+            if cv2.waitKey(1) & 0xFF == ord('q'):
                 print('stop camera')
                 self.cap.release()
                 self.writer.release()
@@ -74,19 +81,20 @@ class CameraThread:
     def toggle(self):
         self.is_running = not self.is_running
         if self.is_running:
-            utils.make_dir(name=self.name_id)
-            self.path = os.path.join('data', self.name_id, f'{self.name_id}_{utils.name_id}' + '.mp4')
+            Path('data/' + self.name_id).mkdir(parents=True, exist_ok=True)
+            self.path = os.path.join('data', self.name_id, f'{self.name_id}_{utils.name_id.value}' + '.mp4')
             self.writer = cv2.VideoWriter(self.path, self.fourcc, 25.0,
                                           (int(self.cap.get(3)), int(self.cap.get(4)) - 40))
 
 
 class SpinCamThread:
-    def __init__(self, name):
+    def __init__(self, name, toggle_var):
 
         # Set up thread variables
+        self.toggle_var = toggle_var.value
         self.name_id = name
         utils.make_dir(name=self.name_id)
-        self.path = os.path.join('data', self.name_id, f'{self.name_id}_{str(utils.name_id)}' + '.mp4')
+        self.path = os.path.join('data', self.name_id, f'{self.name_id}_{str(utils.name_id.value)}' + '.mp4')
         self.is_running = False
 
         self.fps = 30
@@ -109,7 +117,7 @@ class SpinCamThread:
 
         # Initialize thread
         self._config()
-        self.cam_thread = Thread(target=self._run, daemon=True, name='Cam_Thread')
+        self.cam_process = Thread(target=self._run, daemon=True, name='Cam_Thread')
         self.cam_thread.start()
         keyboard.add_hotkey('space', self.toggle)
 
@@ -144,12 +152,12 @@ class SpinCamThread:
                 cv2.moveWindow(winname, 40, 30)  # Move it to (40,30)
                 cv2.imshow(winname, show_data)
 
-                if utils.toggle_var == 'start':
-                    utils.frame += 1
+                if self.toggle_var == 'start':
+                    utils.frame.value += 1
                     self.writer.write(image_data)
 
-                elif utils.toggle_var == 'stop':
-                    utils.frame = 0
+                elif self.toggle_var == 'stop':
+                    utils.frame.value = 0
                     self.writer.release()
 
             image_result.Release()
@@ -163,7 +171,7 @@ class SpinCamThread:
         self.is_running = not self.is_running
         if self.is_running:
             utils.make_dir(name=self.name_id)
-            self.path = os.path.join('data', self.name_id, f'{self.name_id}_{utils.name_id}' + '.mp4')
+            self.path = os.path.join('data', self.name_id, f'{self.name_id}_{utils.name_id.value}' + '.mp4')
             w, h = self.resolution
             self.writer = cv2.VideoWriter(self.path, self.fourcc, self.fps,
                                           (w, h))
